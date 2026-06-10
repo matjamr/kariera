@@ -2,170 +2,192 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { IconLock, IconMail, IconShieldLock, IconUser } from '@tabler/icons-react';
+import { useAuth } from '~/components/app/AuthProvider';
+import AuthShell from '~/components/app/AuthShell';
+import GoogleIcon from '~/components/app/GoogleIcon';
+
+const inputClass =
+  'w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent';
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const { signUp, signInWithGoogle } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (!acceptTerms) {
+      setError('You need to accept the terms and privacy policy.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await signUp(fullName, email, password);
+      router.replace('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign up failed. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setError(null);
+    try {
+      await signInWithGoogle();
+      router.replace('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google sign-up failed. Please try again.');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-violet-50/50 dark:bg-slate-900 relative overflow-hidden flex items-center justify-center px-4 py-12">
-      {/* Background Decorations */}
-      <div className="absolute top-[-100px] right-[-50px] w-[512px] h-[820px] rounded-full bg-purple-100/40 dark:bg-purple-900/10 blur-3xl" />
-      <div className="absolute bottom-[200px] left-[-100px] w-[1024px] h-[820px] rounded-full bg-indigo-500/10 dark:bg-indigo-500/5 blur-3xl" />
-
-      {/* Main Container */}
-      <div className="relative z-10 w-full max-w-md">
-        {/* Brand Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-block">
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-4xl">🚀</span>
-            </div>
-            <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">Kariera</h1>
-          </div>
-        </div>
-
-        {/* Registration Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            Stwórz konto 🎉
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Zacznij śledzić swoje aplikacje już dziś
-          </p>
-
-          <form className="space-y-5">
-            {/* Full Name Field */}
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Imię i nazwisko
-              </label>
-              <input
-                type="text"
-                id="fullName"
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="Jan Kowalski"
-              />
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="jan@example.com"
-              />
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Hasło
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Potwierdź hasło
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-
-            {/* Terms Checkbox */}
-            <div className="flex items-start">
-              <input
-                id="terms"
-                type="checkbox"
-                className="w-4 h-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-              />
-              <label htmlFor="terms" className="ml-2 text-sm text-slate-600 dark:text-slate-400">
-                Akceptuję{' '}
-                <Link href="/terms" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                  regulamin
-                </Link>{' '}
-                i{' '}
-                <Link href="/privacy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                  politykę prywatności
-                </Link>
-              </label>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Utwórz konto
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="mt-6 mb-6 flex items-center">
-            <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
-            <span className="px-4 text-sm text-slate-500 dark:text-slate-400">lub</span>
-            <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
-          </div>
-
-          {/* Social Login */}
-          <button className="w-full py-3 px-4 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300 font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="currentColor"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="currentColor"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="currentColor"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            Kontynuuj z Google
-          </button>
-        </div>
-
-        {/* Sign In Link */}
+    <AuthShell
+      subtitle="Create an account to manage your applications"
+      footer={
         <p className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
-          Masz już konto?{' '}
+          Already have an account?{' '}
           <Link href="/login" className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-            Zaloguj się
+            Sign in
           </Link>
         </p>
+      }
+    >
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        {error && (
+          <div className="px-4 py-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
+        <div>
+          <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            Full name
+          </label>
+          <div className="relative">
+            <IconUser size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              id="fullName"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className={inputClass}
+              placeholder="John Smith"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            Email address
+          </label>
+          <div className="relative">
+            <IconMail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="email"
+              id="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={inputClass}
+              placeholder="name@company.com"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            Password
+          </label>
+          <div className="relative">
+            <IconLock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="password"
+              id="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={inputClass}
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            Confirm password
+          </label>
+          <div className="relative">
+            <IconShieldLock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="password"
+              id="confirmPassword"
+              required
+              minLength={6}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={inputClass}
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            id="terms"
+            type="checkbox"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          <label htmlFor="terms" className="ml-2 text-sm text-slate-600 dark:text-slate-400">
+            I accept the{' '}
+            <Link href="/terms" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              terms
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              privacy policy
+            </Link>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          {submitting ? 'Creating account…' : 'Sign up'}
+        </button>
+      </form>
+
+      <div className="mt-6 mb-6 flex items-center">
+        <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
+        <span className="px-4 text-sm text-slate-500 dark:text-slate-400">OR</span>
+        <div className="flex-1 border-t border-slate-200 dark:border-slate-700" />
       </div>
-    </div>
+
+      <button
+        onClick={handleGoogle}
+        className="w-full py-3 px-4 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300 font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+      >
+        <GoogleIcon />
+        Sign up with Google
+      </button>
+    </AuthShell>
   );
 }
