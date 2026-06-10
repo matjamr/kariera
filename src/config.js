@@ -1,10 +1,11 @@
 module.exports.SITE = {
-  name: 'TailNext',
+  name: 'Kariera',
 
-  origin: 'https://tailnext.vercel.app',
+  origin: 'https://kariera.example.com',
   basePathname: '/',
   trailingSlash: false,
 
-  title: 'TailNext — Your website with Next.js + Tailwind CSS',
-  description: 'TailNext is a free and ready to start template to make your website using Next.js and Tailwind CSS.',
+  title: 'Kariera — Your job search, simplified',
+  description:
+    'Kariera is a recruitment hub that helps you track job applications, interviews, offers and analytics in one place.',
 };
