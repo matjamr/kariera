@@ -19,17 +19,17 @@ const ToggleDarkMode = () => {
   return (
     <button
       onClick={handleOnClick}
-      className="inline-block rounded-lg p-2.5 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-      aria-label="Toggle Dark Mode"
+      className="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+      aria-label="Toggle dark mode"
     >
       {mounted ? (
         currentTheme === 'dark' ? (
-          <IconMoon className="h-5 w-5" />
+          <IconMoon size={20} />
         ) : (
-          <IconSun className="h-5 w-5" />
+          <IconSun size={20} />
         )
       ) : (
-        <div className="h-5 w-5"></div>
+        <span className="block h-5 w-5"></span>
       )}
     </button>
   );

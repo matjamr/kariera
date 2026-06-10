@@ -17,6 +17,7 @@ rozmowy kwalifikacyjne i statystyki w jednym miejscu.
 - [Użyte technologie](#użyte-technologie)
 - [Struktura projektu](#struktura-projektu)
 - [Zrzuty ekranu](#zrzuty-ekranu)
+- [Firebase Authentication](#firebase-authentication)
 - [Google Analytics](#google-analytics)
 - [Hotjar / Contentsquare](#hotjar--contentsquare)
 - [Wdrożenie](#wdrożenie)
@@ -32,6 +33,8 @@ rozmowy kwalifikacyjne i statystyki w jednym miejscu.
 - ⚙️ **Ustawienia** — profil i preferencje poszukiwania pracy
 - 📄 **Raport** — raport wyników z eksportem do PDF
 - 🔐 **Logowanie Firebase** — email/hasło + Google, chronione trasy
+- 🔔 **Powiadomienia** — panel powiadomień z możliwością oznaczenia jako przeczytane
+- 🌙 **Tryb ciemny** — przełącznik jasny/ciemny motyw w górnym pasku aplikacji
 
 ## Zaczynamy!
 
@@ -193,6 +196,27 @@ raportuje pageview do GA4 i Contentsquare przy każdej zmianie trasy.
 | Desktop       | Mobile     |
 |:-------------:|:------------:|
 | ![404 Desktop](docs/screenshots/404.png) | ![404 Mobile](docs/screenshots/mobile-404.png) |
+
+### Panel powiadomień
+| Desktop       |
+|:-------------:|
+| ![Powiadomienia](docs/screenshots/notifications.png) |
+
+### Tryb ciemny
+| Desktop       |
+|:-------------:|
+| ![Tryb ciemny](docs/screenshots/dark-mode-dashboard.png) |
+
+## Firebase Authentication
+
+Logowanie zrealizowane przez Firebase Authentication — włączone metody **Email/Password** oraz
+**Google** (Firebase Console → Authentication → Sign-in method):
+
+![Firebase — metody logowania](docs/screenshots/firebase-sign-in-methods.png)
+
+Zarejestrowani użytkownicy aplikacji widoczni w konsoli Firebase (Authentication → Users):
+
+![Firebase — użytkownicy](docs/screenshots/firebase-users.png)
 
 ## Google Analytics
 

@@ -3,9 +3,11 @@
 import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { IconBell, IconLogout, IconSearch, IconSettings } from '@tabler/icons-react';
+import { IconLogout, IconSearch, IconSettings } from '@tabler/icons-react';
 import { useAuth } from '~/components/app/AuthProvider';
 import { useOnClickOutside } from '~/hooks/useOnClickOutside';
+import NotificationsMenu from '~/components/app/NotificationsMenu';
+import ToggleDarkMode from '~/components/atoms/ToggleDarkMode';
 
 function initialsOf(name: string | null, email: string | null): string {
   if (name && name.trim()) {
@@ -55,13 +57,8 @@ export default function AppHeader() {
 
         {/* Right: actions */}
         <div className="flex items-center gap-1 sm:gap-2">
-          <button
-            aria-label="Notifications"
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors relative"
-          >
-            <IconBell size={20} className="text-slate-600 dark:text-slate-400" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full"></span>
-          </button>
+          <ToggleDarkMode />
+          <NotificationsMenu />
           <Link
             href="/settings"
             aria-label="Settings"
