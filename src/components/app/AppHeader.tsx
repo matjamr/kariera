@@ -1,11 +1,12 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { IconLogout, IconSearch, IconSettings } from '@tabler/icons-react';
 import { useAuth } from '~/components/app/AuthProvider';
 import { useOnClickOutside } from '~/hooks/useOnClickOutside';
+import { usePreference } from '~/hooks/usePreference';
 import NotificationsMenu from '~/components/app/NotificationsMenu';
 import ToggleDarkMode from '~/components/atoms/ToggleDarkMode';
 
@@ -25,9 +26,31 @@ function initialsOf(name: string | null, email: string | null): string {
 export default function AppHeader() {
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [avatar] = usePreference('kariera-avatar', '');
   const menuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(menuRef, () => setMenuOpen(false));
+
+  // Restore the phrase when landing on /applications?q=... directly.
+  useEffect(() => {
+    if (pathname === '/applications') {
+      const q = new URLSearchParams(window.location.search).get('q');
+      if (q) setQuery(q);
+    }
+  }, [pathname]);
+
+  // Typing searches the applications list; from any page it takes you there.
+  const handleSearch = (value: string) => {
+    setQuery(value);
+    const target = value.trim() ? `/applications?q=${encodeURIComponent(value.trim())}` : '/applications';
+    if (pathname === '/applications') {
+      router.replace(target);
+    } else if (value.trim()) {
+      router.push(target);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -49,6 +72,8 @@ export default function AppHeader() {
             />
             <input
               type="search"
+              value={query}
+              onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search applications..."
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
@@ -72,9 +97,14 @@ export default function AppHeader() {
             <button
               onClick={() => setMenuOpen((open) => !open)}
               aria-label="Account menu"
-              className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium hover:bg-indigo-600 transition-colors"
+              className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium hover:bg-indigo-600 transition-colors overflow-hidden"
             >
-              {initialsOf(user?.displayName ?? null, user?.email ?? null)}
+              {avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                initialsOf(user?.displayName ?? null, user?.email ?? null)
+              )}
             </button>
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-lg py-1 z-40">

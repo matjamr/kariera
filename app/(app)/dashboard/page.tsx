@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   IconCalendarEvent,
@@ -11,6 +12,7 @@ import {
   IconTargetArrow,
 } from '@tabler/icons-react';
 import { useAuth } from '~/components/app/AuthProvider';
+import MeetingModal from '~/components/app/MeetingModal';
 import StatusBadge from '~/components/app/StatusBadge';
 import { useApplications } from '~/hooks/useApplications';
 import { formatAppliedDate } from '~/shared/data/applications';
@@ -74,6 +76,7 @@ const recentActivity = [
 export default function DashboardPage() {
   const { user } = useAuth();
   const { applications } = useApplications();
+  const [meetingOpen, setMeetingOpen] = useState(false);
   const firstName = (user?.displayName ?? user?.email ?? 'there').split(/[\s@]/)[0];
   const recentApplications = applications.slice(0, 3);
 
@@ -182,11 +185,26 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <button className="mt-auto w-full py-2.5 px-4 bg-white text-indigo-600 font-semibold text-sm rounded-lg hover:bg-indigo-50 transition-colors">
+          <button
+            onClick={() => setMeetingOpen(true)}
+            className="mt-auto w-full py-2.5 px-4 bg-white text-indigo-600 font-semibold text-sm rounded-lg hover:bg-indigo-50 transition-colors"
+          >
             Join Meeting
           </button>
         </div>
       </div>
+
+      <MeetingModal
+        open={meetingOpen}
+        onClose={() => setMeetingOpen(false)}
+        meeting={{
+          title: 'Design Sync with Airbnb',
+          time: 'Tomorrow at 10:00 AM',
+          platform: 'Zoom Meeting',
+          participants: ['Sarah Johnson', 'Marta Kowalska', '+2 others'],
+          link: 'https://zoom.us/j/87459123650',
+        }}
+      />
 
       {/* Recent applications table */}
       <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">

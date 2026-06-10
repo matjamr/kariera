@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { IconBriefcase, IconCheck, IconEye, IconPencil, IconUserCircle } from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { IconAlertTriangle, IconBriefcase, IconCheck, IconEye, IconPencil, IconUserCircle } from '@tabler/icons-react';
 import { useAuth } from '~/components/app/AuthProvider';
+import Modal from '~/components/app/Modal';
+import { usePreference } from '~/hooks/usePreference';
 
 const inputClass =
   'w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent';
@@ -24,7 +27,11 @@ interface ProfileSettings {
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+  const [avatar, setAvatar] = usePreference('kariera-avatar', '');
+  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState<ProfileSettings>({
     fullName: '',
     email: '',
@@ -61,6 +68,22 @@ export default function SettingsPage() {
     setSaved(true);
   };
 
+  const handlePhoto = (files: FileList | null) => {
+    const file = files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatar(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleDeactivate = async () => {
+    ['kariera-profile', 'kariera-avatar', 'kariera-applications', 'kariera-notifications-read', 'kariera-plan'].forEach(
+      (key) => window.localStorage.removeItem(key),
+    );
+    await signOut();
+    router.replace('/login');
+  };
+
   const initials = (profile.fullName || profile.email || 'U')
     .split(/\s+/)
     .map((part) => part[0])
@@ -95,12 +118,28 @@ export default function SettingsPage() {
           {/* Avatar */}
           <div className="flex flex-col items-center gap-2 shrink-0">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-indigo-500 flex items-center justify-center text-white text-2xl font-semibold">
-                {initials}
+              <div className="w-24 h-24 rounded-full bg-indigo-500 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden">
+                {avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
               </div>
-              <span className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-indigo-600 border-2 border-white dark:border-slate-800 flex items-center justify-center">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Change profile photo"
+                className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-indigo-600 hover:bg-indigo-700 border-2 border-white dark:border-slate-800 flex items-center justify-center transition-colors"
+              >
                 <IconPencil size={14} className="text-white" />
-              </span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg"
+                className="hidden"
+                onChange={(e) => handlePhoto(e.target.files)}
+              />
             </div>
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Profile Photo</p>
             <p className="text-xs text-slate-400">PNG or JPG, max 10MB</p>
@@ -236,10 +275,41 @@ export default function SettingsPage() {
             Permanently remove your account and all associated data.
           </p>
         </div>
-        <button className="px-5 py-2.5 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-fit">
+        <button
+          onClick={() => setDeactivateOpen(true)}
+          className="px-5 py-2.5 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-fit"
+        >
           Deactivate Profile
         </button>
       </div>
+
+      {/* Deactivate confirmation */}
+      <Modal open={deactivateOpen} onClose={() => setDeactivateOpen(false)} maxWidth="max-w-md">
+        <div className="p-8 text-center">
+          <div className="mx-auto w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-5">
+            <IconAlertTriangle size={28} className="text-red-600 dark:text-red-400" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Deactivate profile</h2>
+          <p className="text-slate-600 dark:text-slate-400">
+            Your local data (profile, applications, preferences) will be removed and you will be signed out. Are you
+            sure?
+          </p>
+        </div>
+        <div className="px-8 py-5 bg-slate-50 dark:bg-slate-800/60 rounded-b-xl border-t border-slate-100 dark:border-slate-700 flex gap-3">
+          <button
+            onClick={() => setDeactivateOpen(false)}
+            className="flex-1 py-2.5 px-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDeactivate}
+            className="flex-1 py-2.5 px-4 rounded-lg bg-red-700 hover:bg-red-800 text-white font-medium transition-colors"
+          >
+            Yes, deactivate
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

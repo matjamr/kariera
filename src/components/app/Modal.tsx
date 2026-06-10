@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { IconX } from '@tabler/icons-react';
 
 interface ModalProps {
@@ -12,7 +13,16 @@ interface ModalProps {
 }
 
 // Reusable overlay dialog used by the application wizard and confirmations.
+// Rendered through a portal into <body>; the app shell (#app-shell) gets a real
+// CSS blur while the modal is open — backdrop-filter can't blur fixed-position
+// elements (the app header) in Chromium, which left an unblurred strip on top.
 export default function Modal({ open, onClose, children, maxWidth = 'max-w-xl', showClose = false }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -20,17 +30,19 @@ export default function Modal({ open, onClose, children, maxWidth = 'max-w-xl', 
     };
     document.addEventListener('keydown', onKeyDown);
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -50,6 +62,7 @@ export default function Modal({ open, onClose, children, maxWidth = 'max-w-xl', 
         )}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

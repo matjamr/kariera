@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { IconBuildingSkyscraper, IconCalendarEvent, IconDotsVertical, IconPlus } from '@tabler/icons-react';
 import ApplicationWizard from '~/components/app/ApplicationWizard';
 import ConfirmDeleteModal from '~/components/app/ConfirmDeleteModal';
@@ -101,11 +102,21 @@ function ApplicationCard({
   );
 }
 
-export default function ApplicationsPage() {
+function ApplicationsContent() {
   const { applications, ready, addApplication, updateApplication, removeApplication } = useApplications();
   const [wizardOpen, setWizardOpen] = useState(false);
   const [editing, setEditing] = useState<JobApplication | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const query = (searchParams.get('q') ?? '').trim().toLowerCase();
+  const filtered = query
+    ? applications.filter((application) =>
+        [application.position, application.company, application.location, application.industry]
+          .join(' ')
+          .toLowerCase()
+          .includes(query),
+      )
+    : applications;
 
   const handleSubmit = (data: Omit<JobApplication, 'id'>) => {
     if (editing) {
@@ -134,17 +145,25 @@ export default function ApplicationsPage() {
         </button>
       </div>
 
-      {ready && applications.length === 0 ? (
+      {query && (
+        <p className="text-sm text-slate-500 dark:text-slate-400 -mt-4">
+          {filtered.length} result{filtered.length === 1 ? '' : 's'} for &bdquo;{query}&rdquo;
+        </p>
+      )}
+
+      {ready && filtered.length === 0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-16 text-center">
           <span className="text-4xl">📭</span>
-          <h2 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">No applications yet</h2>
+          <h2 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">
+            {query ? 'No applications match your search' : 'No applications yet'}
+          </h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Click “Create New” to add your first job application.
+            {query ? 'Try a different phrase or clear the search box.' : 'Click “Create New” to add your first job application.'}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {applications.map((application) => (
+          {filtered.map((application) => (
             <ApplicationCard
               key={application.id}
               application={application}
@@ -174,5 +193,14 @@ export default function ApplicationsPage() {
         }}
       />
     </div>
+  );
+}
+
+export default function ApplicationsPage() {
+  // useSearchParams requires a Suspense boundary during prerendering.
+  return (
+    <Suspense fallback={null}>
+      <ApplicationsContent />
+    </Suspense>
   );
 }

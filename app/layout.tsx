@@ -37,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps) {
             <Suspense fallback={null}>
               <AnalyticsListener />
             </Suspense>
-            {children}
+            <div id="app-shell">{children}</div>
           </AuthProvider>
         </Providers>
       </body>

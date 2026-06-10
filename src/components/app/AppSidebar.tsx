@@ -11,6 +11,7 @@ import {
   IconStarFilled,
   IconPlus,
 } from '@tabler/icons-react';
+import { usePreference } from '~/hooks/usePreference';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: IconLayoutGrid },
@@ -21,6 +22,7 @@ const navigation = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const [plan] = usePreference('kariera-plan', 'standard');
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col z-20">
@@ -32,7 +34,13 @@ export default function AppSidebar() {
           </div>
           <div>
             <div className="font-bold text-slate-900 dark:text-white leading-tight">Kariera</div>
-            <div className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase">Free plan</div>
+            <div
+              className={`text-[10px] font-semibold tracking-widest uppercase ${
+                plan === 'pro' ? 'text-indigo-500 dark:text-indigo-400' : 'text-slate-400'
+              }`}
+            >
+              {plan === 'pro' ? 'Pro plan' : 'Free plan'}
+            </div>
           </div>
         </div>
       </div>
@@ -65,14 +73,24 @@ export default function AppSidebar() {
 
       {/* Upgrade CTA */}
       <div className="px-4 py-5">
-        <Link
-          href="/pricing"
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors shadow-sm"
-        >
-          <IconPlus size={16} />
-          <IconStarFilled size={14} />
-          Upgrade to Pro
-        </Link>
+        {plan === 'pro' ? (
+          <Link
+            href="/pricing"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-sm font-semibold"
+          >
+            <IconStarFilled size={14} />
+            Pro active
+          </Link>
+        ) : (
+          <Link
+            href="/pricing"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors shadow-sm"
+          >
+            <IconPlus size={16} />
+            <IconStarFilled size={14} />
+            Upgrade to Pro
+          </Link>
+        )}
       </div>
     </aside>
   );

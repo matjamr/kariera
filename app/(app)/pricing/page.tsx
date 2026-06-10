@@ -1,6 +1,7 @@
 'use client';
 
 import { IconCheck, IconCircleCheck, IconBan } from '@tabler/icons-react';
+import { usePreference } from '~/hooks/usePreference';
 
 const TRUSTED = ['ACME Corp', 'Globex', 'Soylent', 'Initech', 'Umbrella Corp'];
 
@@ -22,6 +23,8 @@ const FAQS = [
 ];
 
 export default function PricingPage() {
+  const [plan, setPlan] = usePreference('kariera-plan', 'standard');
+
   return (
     <div className="space-y-12 max-w-5xl mx-auto">
       {/* Heading */}
@@ -60,8 +63,16 @@ export default function PricingPage() {
             </li>
           </ul>
 
-          <button className="mt-auto w-full py-2.5 px-4 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-            Choose Plan
+          <button
+            onClick={() => setPlan('standard')}
+            disabled={plan === 'standard'}
+            className={`mt-auto w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors ${
+              plan === 'standard'
+                ? 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-default'
+                : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+            }`}
+          >
+            {plan === 'standard' ? '✓ Current plan' : 'Choose Plan'}
           </button>
         </div>
 
@@ -97,8 +108,16 @@ export default function PricingPage() {
             ))}
           </ul>
 
-          <button className="mt-auto w-full py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors">
-            Choose Plan
+          <button
+            onClick={() => setPlan('pro')}
+            disabled={plan === 'pro'}
+            className={`mt-auto w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors ${
+              plan === 'pro'
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 cursor-default'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            }`}
+          >
+            {plan === 'pro' ? '✓ Current plan' : 'Choose Plan'}
           </button>
         </div>
       </div>

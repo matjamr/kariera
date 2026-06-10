@@ -35,6 +35,9 @@ rozmowy kwalifikacyjne i statystyki w jednym miejscu.
 - 🔐 **Logowanie Firebase** — email/hasło + Google, chronione trasy
 - 🔔 **Powiadomienia** — panel powiadomień z możliwością oznaczenia jako przeczytane
 - 🌙 **Tryb ciemny** — przełącznik jasny/ciemny motyw w górnym pasku aplikacji
+- 🔍 **Wyszukiwarka** — pole w górnym pasku filtruje listę aplikacji w czasie rzeczywistym
+- 🎥 **Szczegóły spotkania** — kliknięcie wydarzenia lub "Join Meeting" otwiera modal z linkiem do rozmowy
+- 👤 **Zdjęcie profilowe** — upload avatara widocznego w całej aplikacji, wybór planu, dezaktywacja konta
 
 ## Zaczynamy!
 
@@ -167,15 +170,25 @@ raportuje pageview do GA4 i Contentsquare przy każdej zmianie trasy.
 |:-------------:|:------------:|
 | ![Modal usuwania Desktop](docs/screenshots/delete-modal.png) | ![Modal usuwania Mobile](docs/screenshots/mobile-delete-modal.png) |
 
+### Szczegóły spotkania
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Spotkanie Desktop](docs/screenshots/meeting-modal.png) | ![Spotkanie Mobile](docs/screenshots/mobile-meeting-modal.png) |
+
 ### Analityka
 | Desktop       | Mobile     |
 |:-------------:|:------------:|
 | ![Analityka Desktop](docs/screenshots/analytics.png) | ![Analityka Mobile](docs/screenshots/mobile-analytics.png) |
 
-### Kalendarz
+### Kalendarz — widok miesiąca
 | Desktop       | Mobile     |
 |:-------------:|:------------:|
 | ![Kalendarz Desktop](docs/screenshots/calendar.png) | ![Kalendarz Mobile](docs/screenshots/mobile-calendar.png) |
+
+### Kalendarz — widok tygodnia
+| Desktop       |
+|:-------------:|
+| ![Kalendarz tydzień](docs/screenshots/calendar-week.png) |
 
 ### Ustawienia
 | Desktop       | Mobile     |
@@ -198,14 +211,14 @@ raportuje pageview do GA4 i Contentsquare przy każdej zmianie trasy.
 | ![404 Desktop](docs/screenshots/404.png) | ![404 Mobile](docs/screenshots/mobile-404.png) |
 
 ### Panel powiadomień
-| Desktop       |
-|:-------------:|
-| ![Powiadomienia](docs/screenshots/notifications.png) |
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Powiadomienia Desktop](docs/screenshots/notifications.png) | ![Powiadomienia Mobile](docs/screenshots/mobile-notifications.png) |
 
 ### Tryb ciemny
-| Desktop       |
-|:-------------:|
-| ![Tryb ciemny](docs/screenshots/dark-mode-dashboard.png) |
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Tryb ciemny Desktop](docs/screenshots/dark-mode-dashboard.png) | ![Tryb ciemny Mobile](docs/screenshots/mobile-dark-mode.png) |
 
 ## Firebase Authentication
 
