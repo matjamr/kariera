@@ -1,170 +1,216 @@
-# Tailnext
+<div align="center">
 
-**Tailnext** is a free and open-source template to make your website using **[NextJS](https://nextjs.org/) + [Tailwind CSS](https://tailwindcss.com/)**. Ready to start a new project and designed taking into account best practices.
+# 🚀 Kariera
 
-## Features
+**Twoje poszukiwanie pracy, uproszczone.**
 
-- ✅ Integration with **Tailwind CSS** supporting **Dark mode**.
-- ✅ **Production-ready** scores in [Lighthouse](https://web.dev/measure/) and [PageSpeed Insights](https://pagespeed.web.dev/) reports.
-- ✅ **Image optimization** and **Font optimization**.
-- ✅ Fast and **SEO friendly blog**.
-- ✅ Generation of **project sitemap** and **robots.txt** based on your routes.
+Aplikacja internetowa do zarządzania aplikacjami o pracę — śledź wysłane CV, statusy rekrutacji,
+rozmowy kwalifikacyjne i statystyki w jednym miejscu.
 
-<br>
+*Projekt zaliczeniowy — Techniki Projektowania Frontendowego (TPF)*
 
-<img src="./screenshot.jpg" alt="Tailnext Theme Screenshot">
+</div>
 
-[![onWidget](https://custom-icon-badges.demolab.com/badge/made%20by%20-onWidget-556bf2?style=flat-square&logo=onwidget&logoColor=white&labelColor=101827)](https://onwidget.com)
-[![License](https://img.shields.io/github/license/onwidget/tailnext?style=flat-square&color=dddddd&labelColor=000000)](https://github.com/onwidget/tailnext/blob/main/LICENSE.md)
-[![Maintained](https://img.shields.io/badge/maintained%3F-yes-brightgreen.svg?style=flat-square)](https://github.com/onwidget)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/onwidget/tailnext#contributing)
-[![Known Vulnerabilities](https://snyk.io/test/github/onwidget/tailnext/badge.svg?style=flat-square)](https://snyk.io/test/github/onwidget/tailnext)
+## Spis treści
+- [Opis aplikacji](#opis-aplikacji)
+- [Zaczynamy!](#zaczynamy)
+- [Użyte technologie](#użyte-technologie)
+- [Struktura projektu](#struktura-projektu)
+- [Zrzuty ekranu](#zrzuty-ekranu)
+- [Google Analytics](#google-analytics)
+- [Hotjar / Contentsquare](#hotjar--contentsquare)
+- [Wdrożenie](#wdrożenie)
 
-<br>
+## Opis aplikacji
 
-<details open>
-<summary>Table of Contents</summary>
+**Kariera** to centrum rekrutacyjne dla osób szukających pracy. Aplikacja odwzorowuje prototyp przygotowany w Figmie (`Kariera.fig`) i oferuje:
 
-- [Demo](#demo)
-- [Getting started](#getting-started)
-  - [Project structure](#project-structure)
-  - [Commands](#commands)
-  - [Configuration](#configuration)
-  - [Deploy](#deploy)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledgements)
-- [License](#license)
+- 📋 **Moje aplikacje** — karty aplikacji o pracę z pełnym CRUD (kreator 3-krokowy, edycja, usuwanie z potwierdzeniem)
+- 📊 **Dashboard** — statystyki, ostatnia aktywność, nadchodzące rozmowy
+- 📈 **Analityka** — pipeline rekrutacyjny, trendy, ranking firm
+- 📅 **Kalendarz** — widok miesiąca z zaplanowanymi rozmowami
+- ⚙️ **Ustawienia** — profil i preferencje poszukiwania pracy
+- 📄 **Raport** — raport wyników z eksportem do PDF
+- 🔐 **Logowanie Firebase** — email/hasło + Google, chronione trasy
+
+## Zaczynamy!
+
+### 1. Sklonuj repozytorium
+```shell
+git clone https://github.com/matjamr/kariera.git
+cd kariera
+```
+
+### 2. Zainstaluj zależności
+Wymagany [Node.js](https://nodejs.org/) 18+
+```shell
+npm install
+```
+
+### 3. Skonfiguruj środowisko
+Skopiuj `.env.example` do `.env.local` i uzupełnij klucze:
+
+```shell
+# Firebase (Console -> Project settings -> Your apps -> Web app)
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+
+# Google Analytics 4
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# Hotjar / Contentsquare (id z taga t.contentsquare.net/uxa/<id>.js)
+NEXT_PUBLIC_CONTENTSQUARE_TAG_ID=...
+```
+
+> **Tryb demo:** gdy zmienne Firebase są puste, aplikacja działa w lokalnym trybie demo —
+> zaloguje dowolny e-mail z hasłem o długości min. 6 znaków (bez prawdziwego konta).
+
+### 4. Uruchom
+```shell
+npm run dev        # http://localhost:3000
+```
+
+Pozostałe komendy: `npm run build` (build produkcyjny), `npm start` (serwer produkcyjny), `npm run storybook` (podgląd komponentów).
+
+### 5. Logowanie
+
+Przy skonfigurowanym Firebase możesz użyć konta testowego:
+
+<details>
+  <summary>Konto testowe</summary>
+
+```shell
+Login: test.kariera@gmail.com
+Hasło: Kariera!2026
+```
 
 </details>
 
-<br>
+Możesz też zarejestrować własne konto (`/register`) albo użyć przycisku **Sign in with Google**.
 
-## Demo
+## Użyte technologie
+- Next.js (14.2) — App Router + React 18
+- TypeScript
+- Tailwind CSS + next-themes (tryb ciemny)
+- Firebase Authentication (11.x) — email/hasło + Google
+- Google Analytics 4 (react-ga4)
+- Hotjar / Contentsquare — nagrania sesji i heatmapy
+- Storybook
+- Git
 
-📌 [https://tailnext.vercel.app/](https://tailnext.vercel.app/)
-
-<br>
-
-## Getting started
-
-- Clone: `git clone https://github.com/onwidget/tailnext.git`
-- Enter in the directory: `cd tailnext`
-- Install dependencies: `npm install`
-- Start the development server: `npm run dev`
-- View project in local environment: `localhost:3000`
-
-### Project structure
-
-Inside **Tailnext** template, you'll see the following folders and files:
+## Struktura projektu
 
 ```
-/
-├── .storybook/
-├── app/
-│   ├── (blog)
-│   │   ├── [slug]
-|   |   |   └── page.js
-|   |   └── blog
-|   |       └── page.js
-│   ├── head.js
-│   ├── layout.js
-│   └── page.js
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── assets/
-│   │   ├── images/
-|   |   └── styles/
-|   |       └── base.css
-│   ├── components/
-│   │   ├── atoms/
-|   |   └── widgets/
-|   |       ├── Header.astro
-|   |       ├── Footer.astro
-|   |       └── ...
-│   │── content/
-│   |   └── blog/
-│   |       ├── demo-post-1.md
-│   |       └── ...
-│   ├── stories/
-│   ├── utils/
-│   └── config.mjs
-├── package.json
-└── ...
+app/
+  (auth)/          # logowanie, rejestracja, reset hasła
+  (app)/           # część chroniona (AuthGuard): dashboard, applications,
+                   # analytics, calendar, settings, pricing, report
+  (legal)/         # privacy, terms
+  (pages)/         # centrum pomocy (FAQ)
+  layout.tsx       # główny layout: AuthProvider + AnalyticsListener
+  not-found.tsx    # strona 404
+src/
+  components/app/  # AppHeader, AppSidebar, MobileTabBar, Modal,
+                   # ApplicationWizard, StatusBadge, AuthProvider, AuthGuard...
+  hooks/           # useApplications (CRUD w localStorage), useOnClickOutside...
+  lib/firebase.ts  # inicjalizacja Firebase ze zmiennych środowiskowych
+  shared/data/     # typy i dane startowe
 ```
 
-[![Edit Tailnext on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://githubbox.com/onwidget/tailnext/tree/main)
+Każdy ekran prototypu ma własną trasę (`/login`, `/register`, `/forgot-password`, `/dashboard`,
+`/applications`, `/analytics`, `/calendar`, `/settings`, `/pricing`, `/report`), nieistniejące
+ścieżki obsługuje strona 404, a trasy aplikacji są chronione — bez zalogowania następuje
+przekierowanie na `/login`. Nawigacja odbywa się bez przeładowania strony, a `AnalyticsListener`
+raportuje pageview do GA4 i Contentsquare przy każdej zmianie trasy.
 
-> **Seasoned next.js expert?** Delete this file. Update `config.mjs` and contents. Have fun!
+## Zrzuty ekranu
 
-<br>
+### Logowanie
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Logowanie Desktop](docs/screenshots/login.png) | ![Logowanie Mobile](docs/screenshots/mobile-login.png) |
 
-### Commands
+### Rejestracja
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Rejestracja Desktop](docs/screenshots/register.png) | ![Rejestracja Mobile](docs/screenshots/mobile-register.png) |
 
-All commands are run from the root of the project, from a terminal:
+### Reset hasła
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Reset hasła Desktop](docs/screenshots/forgot-password.png) | ![Reset hasła Mobile](docs/screenshots/mobile-forgot-password.png) |
 
-| Command               | Action                                       |
-| :-------------------- | :------------------------------------------- |
-| `npm install`         | Install dependencies                         |
-| `npm run dev`         | Starts local dev server at `localhost:3000`  |
-| `npm run build`       | Build your production site to `./dist/`      |
-| `npm run preview`     | Preview your build locally, before deploying |
-| `npm run storybook`   | Open storybook to view stories by widgets    |
-| `npm run format`      | Format codes with Prettier                   |
-| `npm run lint:eslint` | Run Eslint                                   |
+### Dashboard
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Dashboard Desktop](docs/screenshots/dashboard.png) | ![Dashboard Mobile](docs/screenshots/mobile-dashboard.png) |
 
-<br>
+### Moje aplikacje
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Aplikacje Desktop](docs/screenshots/applications.png) | ![Aplikacje Mobile](docs/screenshots/mobile-applications.png) |
 
-### Configuration
+### Dodawanie aplikacji — kreator 3-krokowy
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Kreator Desktop](docs/screenshots/wizard-step1.png) | ![Kreator Mobile](docs/screenshots/mobile-wizard-step1.png) |
 
-Coming soon ..
+### Potwierdzenie usunięcia
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Modal usuwania Desktop](docs/screenshots/delete-modal.png) | ![Modal usuwania Mobile](docs/screenshots/mobile-delete-modal.png) |
 
-<br>
+### Analityka
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Analityka Desktop](docs/screenshots/analytics.png) | ![Analityka Mobile](docs/screenshots/mobile-analytics.png) |
 
-### Deploy
+### Kalendarz
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Kalendarz Desktop](docs/screenshots/calendar.png) | ![Kalendarz Mobile](docs/screenshots/mobile-calendar.png) |
 
-#### Deploy to production (manual)
+### Ustawienia
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Ustawienia Desktop](docs/screenshots/settings.png) | ![Ustawienia Mobile](docs/screenshots/mobile-settings.png) |
 
-You can create an optimized production build with:
+### Cennik
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Cennik Desktop](docs/screenshots/pricing.png) | ![Cennik Mobile](docs/screenshots/mobile-pricing.png) |
 
-```shell
-npm run build
-```
+### Raport (eksport PDF)
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Raport Desktop](docs/screenshots/report.png) | ![Raport Mobile](docs/screenshots/mobile-report.png) |
 
-Now, your website is ready to be deployed. All generated files are located at
-`dist` folder, which you can deploy the folder to any hosting service you
-prefer.
+### Strona 404
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![404 Desktop](docs/screenshots/404.png) | ![404 Mobile](docs/screenshots/mobile-404.png) |
 
-#### Deploy to Netlify
+## Google Analytics
 
-Clone this repository on own GitHub account and deploy to Netlify:
+Aplikacja raportuje pageview przy każdej zmianie trasy (SPA) do property GA4 (`G-F3KHRYS3D3`).
 
-[![Netlify Deploy button](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/onwidget/tailnext.git)
+> _TODO: screeny z panelu GA4 (Realtime + Pages and screens) po zebraniu ruchu z wersji produkcyjnej._
 
-#### Deploy to Vercel
+## Hotjar / Contentsquare
 
-Clone this repository on own GitHub account and deploy to Vercel:
+Hotjar jest częścią Contentsquare — aplikacja ładuje tag śledzący, który nagrywa sesje użytkowników
+(Session Replay) i buduje heatmapy. Panel: [app.contentsquare.com](https://app.contentsquare.com).
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fonwidget%2Ftailnext)
+> _TODO: screeny z panelu (Session Replay / heatmapy) po zebraniu wizyt z wersji produkcyjnej._
 
-<br>
+## Wdrożenie
 
-## Roadmap
+> _TODO: link do działającej aplikacji po wdrożeniu na Vercel._
 
-Coming soon ..
-
-<br>
-
-## Contributing
-
-If you have any idea, suggestions or find any bugs, feel free to open a discussion, an issue or create a pull request.
-That would be very useful for all of us and we would be happy to listen and take action.
-
-## Acknowledgements
-
-Initially created by [onWidget](https://onwidget.com) and maintained by a community of [contributors](https://github.com/onwidget/tailnext/graphs/contributors).
-
-## License
-
-**Tailnext** is licensed under the MIT license — see the [LICENSE](https://github.com/onwidget/tailnext/blob/main/LICENSE.md) file for details.
+Wdrożenie na [Vercel](https://vercel.com/) (darmowy plan Hobby): import repozytorium → ustawienie
+zmiennych środowiskowych z sekcji [Zaczynamy!](#zaczynamy) → Deploy. Po wdrożeniu należy dodać
+domenę produkcyjną w Firebase: *Authentication → Settings → Authorized domains*.
