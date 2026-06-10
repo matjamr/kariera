@@ -207,7 +207,14 @@ Widok "Przegląd w czasie rzeczywistym" z panelu GA4 podczas sesji użytkownikó
 Hotjar jest częścią Contentsquare — aplikacja ładuje tag śledzący, który nagrywa sesje użytkowników
 (Session Replay) i buduje heatmapy. Panel: [app.contentsquare.com](https://app.contentsquare.com).
 
-> _TODO: screeny z panelu (Session Replay / heatmapy) po zebraniu wizyt z wersji produkcyjnej._
+Lista nagranych sesji użytkowników w panelu:
+
+![Session Replay — lista nagrań](docs/screenshots/hotjar-session-replay.png)
+
+Odtwarzacz nagrania sesji — po lewej lista odwiedzonych podstron, na dole oś czasu z zdarzeniami
+(treści na podglądzie są zamaskowane przez domyślne ustawienia prywatności Contentsquare):
+
+![Session Replay — odtwarzacz](docs/screenshots/hotjar-replay-player.png)
 
 ## Wdrożenie
 
