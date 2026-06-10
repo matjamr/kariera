@@ -15,13 +15,16 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@hotjar/browser": "^1.0.9",
     "@tabler/icons-react": "^3.12.0",
+    "firebase": "^12.14.0",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0",
     "next": "^14.2.6",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-ga4": "^3.0.1",
     "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.2"
   },
