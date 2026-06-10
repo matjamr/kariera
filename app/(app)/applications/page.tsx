@@ -1,211 +1,178 @@
 'use client';
 
-import { IconPlus, IconSearch, IconBriefcase, IconMapPin, IconClock } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { IconBuildingSkyscraper, IconCalendarEvent, IconDotsVertical, IconPlus } from '@tabler/icons-react';
+import ApplicationWizard from '~/components/app/ApplicationWizard';
+import ConfirmDeleteModal from '~/components/app/ConfirmDeleteModal';
+import StatusBadge from '~/components/app/StatusBadge';
+import { useApplications } from '~/hooks/useApplications';
+import { useOnClickOutside } from '~/hooks/useOnClickOutside';
+import { formatAppliedDate, type JobApplication } from '~/shared/data/applications';
+
+function daysAgo(iso: string): string {
+  const days = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24)));
+  if (days === 0) return 'today';
+  if (days === 1) return 'yesterday';
+  if (days < 30) return `${days} days ago`;
+  return formatAppliedDate(iso);
+}
+
+function cardMeta(application: JobApplication): string {
+  if (application.note) return application.note;
+  switch (application.status) {
+    case 'rejected':
+      return `Rejected ${formatAppliedDate(application.appliedAt)}`;
+    case 'interview':
+      return `Interview ${formatAppliedDate(application.appliedAt)}`;
+    case 'offer':
+      return `Offer ${formatAppliedDate(application.appliedAt)}`;
+    default:
+      return `Applied ${daysAgo(application.appliedAt)}`;
+  }
+}
+
+function ApplicationCard({
+  application,
+  onEdit,
+  onDelete,
+}: {
+  application: JobApplication;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside(menuRef, () => setMenuOpen(false));
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col gap-4">
+      <div className="flex items-start justify-between">
+        <div className="w-11 h-11 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
+          <IconBuildingSkyscraper size={22} className="text-indigo-600 dark:text-indigo-400" />
+        </div>
+        <div className="flex items-center gap-2">
+          <StatusBadge status={application.status} />
+          <div className="relative" ref={menuRef}>
+            <button
+              aria-label="Application actions"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            >
+              <IconDotsVertical size={18} />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-lg py-1 z-20">
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEdit();
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete();
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-lg text-slate-900 dark:text-white leading-snug">{application.position}</h3>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          {application.company} • {application.location}
+        </p>
+      </div>
+
+      <p className="mt-auto flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+        <IconCalendarEvent size={14} />
+        {cardMeta(application)}
+      </p>
+    </div>
+  );
+}
 
 export default function ApplicationsPage() {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { applications, ready, addApplication, updateApplication, removeApplication } = useApplications();
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [editing, setEditing] = useState<JobApplication | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const applications = [
-    {
-      id: 1,
-      company: 'Google',
-      position: 'Senior Frontend Developer',
-      location: 'Warszawa, Polska',
-      salary: '25 000 - 35 000 PLN',
-      status: 'interview',
-      appliedDate: '2024-06-10',
-      logo: '🔵',
-    },
-    {
-      id: 2,
-      company: 'Meta',
-      position: 'Software Engineer',
-      location: 'Zdalna',
-      salary: '30 000 - 40 000 PLN',
-      status: 'applied',
-      appliedDate: '2024-06-08',
-      logo: '🔷',
-    },
-    {
-      id: 3,
-      company: 'Apple',
-      position: 'iOS Developer',
-      location: 'Kraków, Polska',
-      salary: '28 000 - 38 000 PLN',
-      status: 'rejected',
-      appliedDate: '2024-06-05',
-      logo: '🍎',
-    },
-    {
-      id: 4,
-      company: 'Amazon',
-      position: 'Backend Developer',
-      location: 'Wrocław, Polska',
-      salary: '22 000 - 32 000 PLN',
-      status: 'applied',
-      appliedDate: '2024-06-03',
-      logo: '📦',
-    },
-    {
-      id: 5,
-      company: 'Netflix',
-      position: 'Full Stack Developer',
-      location: 'Zdalna',
-      salary: '32 000 - 42 000 PLN',
-      status: 'interview',
-      appliedDate: '2024-06-01',
-      logo: '🎬',
-    },
-    {
-      id: 6,
-      company: 'Microsoft',
-      position: 'Cloud Engineer',
-      location: 'Gdańsk, Polska',
-      salary: '26 000 - 36 000 PLN',
-      status: 'offer',
-      appliedDate: '2024-05-28',
-      logo: '🪟',
-    },
-  ];
-
-  const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { label: string; className: string }> = {
-      applied: { label: 'Aplikowano', className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' },
-      interview: { label: 'Rozmowa', className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' },
-      offer: { label: 'Oferta', className: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' },
-      rejected: { label: 'Odrzucone', className: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' },
-    };
-
-    const { label, className } = statusMap[status] || statusMap.applied;
-    return <span className={`px-3 py-1 rounded-full text-xs font-medium ${className}`}>{label}</span>;
+  const handleSubmit = (data: Omit<JobApplication, 'id'>) => {
+    if (editing) {
+      updateApplication(editing.id, data);
+    } else {
+      addApplication(data);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Moje aplikacje</h1>
-          <p className="text-slate-600 dark:text-slate-400">Zarządzaj wszystkimi swoimi aplikacjami w jednym miejscu</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">My Applications</h1>
+          <p className="text-slate-600 dark:text-slate-400">Browse and manage all your job applications.</p>
         </div>
-        <button className="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
-          <IconPlus size={20} />
-          Dodaj aplikację
+        <button
+          onClick={() => {
+            setEditing(null);
+            setWizardOpen(true);
+          }}
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors"
+        >
+          <IconPlus size={18} />
+          Create New
         </button>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <IconSearch size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Szukaj aplikacji..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-          </div>
-
-          {/* Filter Buttons */}
-          <div className="flex gap-2">
-            <button className="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-              Wszystkie
-            </button>
-            <button className="px-4 py-2.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20 text-sm font-medium text-indigo-600 dark:text-indigo-400 transition-colors">
-              Aktywne
-            </button>
-            <button className="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-              Zakończone
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Applications Grid */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {applications.map((app) => (
-            <div
-              key={app.id}
-              className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg transition-shadow cursor-pointer"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-2xl">
-                  {app.logo}
-                </div>
-                {getStatusBadge(app.status)}
-              </div>
-
-              {/* Company & Position */}
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-1">{app.company}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{app.position}</p>
-
-              {/* Details */}
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                  <IconMapPin size={16} />
-                  <span>{app.location}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                  <IconBriefcase size={16} />
-                  <span>{app.salary}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                  <IconClock size={16} />
-                  <span>Aplikowano {app.appliedDate}</span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
-                <button className="flex-1 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
-                  Szczegóły
-                </button>
-                <button className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                  Edytuj
-                </button>
-              </div>
-            </div>
-          ))}
+      {ready && applications.length === 0 ? (
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-16 text-center">
+          <span className="text-4xl">📭</span>
+          <h2 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">No applications yet</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Click “Create New” to add your first job application.
+          </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-              <tr>
-                <th className="text-left py-4 px-6 text-sm font-medium text-slate-600 dark:text-slate-400">Firma</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-slate-600 dark:text-slate-400">Pozycja</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-slate-600 dark:text-slate-400">Lokalizacja</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-slate-600 dark:text-slate-400">Wynagrodzenie</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-slate-600 dark:text-slate-400">Status</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-slate-600 dark:text-slate-400">Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {applications.map((app) => (
-                <tr key={app.id} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-lg">
-                        {app.logo}
-                      </div>
-                      <span className="font-medium text-slate-900 dark:text-white">{app.company}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 text-slate-600 dark:text-slate-400">{app.position}</td>
-                  <td className="py-4 px-6 text-slate-600 dark:text-slate-400">{app.location}</td>
-                  <td className="py-4 px-6 text-slate-600 dark:text-slate-400">{app.salary}</td>
-                  <td className="py-4 px-6">{getStatusBadge(app.status)}</td>
-                  <td className="py-4 px-6 text-slate-600 dark:text-slate-400">{app.appliedDate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {applications.map((application) => (
+            <ApplicationCard
+              key={application.id}
+              application={application}
+              onEdit={() => {
+                setEditing(application);
+                setWizardOpen(true);
+              }}
+              onDelete={() => setDeletingId(application.id)}
+            />
+          ))}
         </div>
       )}
+
+      <ApplicationWizard
+        open={wizardOpen}
+        initial={editing}
+        onClose={() => setWizardOpen(false)}
+        onSubmit={handleSubmit}
+      />
+
+      <ConfirmDeleteModal
+        open={deletingId !== null}
+        onCancel={() => setDeletingId(null)}
+        onConfirm={() => {
+          if (deletingId) removeApplication(deletingId);
+          setDeletingId(null);
+        }}
+      />
     </div>
   );
 }
