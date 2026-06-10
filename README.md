@@ -186,9 +186,9 @@ raportuje pageview do GA4 i Contentsquare przy każdej zmianie trasy.
 | ![Kalendarz Desktop](docs/screenshots/calendar.png) | ![Kalendarz Mobile](docs/screenshots/mobile-calendar.png) |
 
 ### Kalendarz — widok tygodnia
-| Desktop       |
-|:-------------:|
-| ![Kalendarz tydzień](docs/screenshots/calendar-week.png) |
+| Desktop       | Mobile     |
+|:-------------:|:------------:|
+| ![Kalendarz tydzień Desktop](docs/screenshots/calendar-week.png) | ![Kalendarz tydzień Mobile](docs/screenshots/mobile-calendar-week.png) |
 
 ### Ustawienia
 | Desktop       | Mobile     |
