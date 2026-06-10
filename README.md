@@ -29,7 +29,7 @@ rozmowy kwalifikacyjne i statystyki w jednym miejscu.
 - 📋 **Moje aplikacje** — karty aplikacji o pracę z pełnym CRUD (kreator 3-krokowy, edycja, usuwanie z potwierdzeniem)
 - 📊 **Dashboard** — statystyki, ostatnia aktywność, nadchodzące rozmowy
 - 📈 **Analityka** — pipeline rekrutacyjny, trendy, ranking firm
-- 📅 **Kalendarz** — widok miesiąca z zaplanowanymi rozmowami
+- 📅 **Kalendarz** — widoki miesiąca, tygodnia (siatka godzinowa) i dnia z zaplanowanymi rozmowami
 - ⚙️ **Ustawienia** — profil i preferencje poszukiwania pracy
 - 📄 **Raport** — raport wyników z eksportem do PDF
 - 🔐 **Logowanie Firebase** — email/hasło + Google, chronione trasy
@@ -238,6 +238,11 @@ Aplikacja raportuje pageview przy każdej zmianie trasy (SPA) do property GA4 (`
 Widok "Przegląd w czasie rzeczywistym" z panelu GA4 podczas sesji użytkowników na wersji produkcyjnej:
 
 ![GA4 Realtime](docs/screenshots/ga-realtime.png)
+
+Raport "Strony w czasie rzeczywistym" — widoczne poszczególne trasy aplikacji (`/dashboard`, `/calendar`,
+`/analytics`, `/applications`, `/report`) raportowane przy nawigacji SPA bez przeładowania strony:
+
+![GA4 Realtime Pages](docs/screenshots/ga-realtime-pages.png)
 
 ## Hotjar / Contentsquare
 
