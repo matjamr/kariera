@@ -198,7 +198,9 @@ raportuje pageview do GA4 i Contentsquare przy każdej zmianie trasy.
 
 Aplikacja raportuje pageview przy każdej zmianie trasy (SPA) do property GA4 (`G-F3KHRYS3D3`).
 
-> _TODO: screeny z panelu GA4 (Realtime + Pages and screens) po zebraniu ruchu z wersji produkcyjnej._
+Widok "Przegląd w czasie rzeczywistym" z panelu GA4 podczas sesji użytkowników na wersji produkcyjnej:
+
+![GA4 Realtime](docs/screenshots/ga-realtime.png)
 
 ## Hotjar / Contentsquare
 
@@ -209,8 +211,8 @@ Hotjar jest częścią Contentsquare — aplikacja ładuje tag śledzący, któr
 
 ## Wdrożenie
 
-> _TODO: link do działającej aplikacji po wdrożeniu na Vercel._
+### 🌍 Aplikacja działa pod adresem: **[kariera-silk.vercel.app](https://kariera-silk.vercel.app)**
 
-Wdrożenie na [Vercel](https://vercel.com/) (darmowy plan Hobby): import repozytorium → ustawienie
-zmiennych środowiskowych z sekcji [Zaczynamy!](#zaczynamy) → Deploy. Po wdrożeniu należy dodać
-domenę produkcyjną w Firebase: *Authentication → Settings → Authorized domains*.
+Wdrożenie na [Vercel](https://vercel.com/) (darmowy plan Hobby) przez Vercel CLI: `vercel link` →
+`vercel env add` (zmienne z sekcji [Zaczynamy!](#zaczynamy)) → `vercel --prod`. Po wdrożeniu domena
+produkcyjna została dodana w Firebase: *Authentication → Settings → Authorized domains*.
