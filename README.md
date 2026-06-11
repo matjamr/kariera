@@ -244,10 +244,20 @@ Raport "Strony w czasie rzeczywistym" — widoczne poszczególne trasy aplikacji
 
 ![GA4 Realtime Pages](docs/screenshots/ga-realtime-pages.png)
 
+Raport historyczny "Strony i ekrany" — zagregowane wyświetlenia tras aplikacji w czasie
+(323 wyświetlenia, w tym `/dashboard` 84):
+
+![GA4 Pages report](docs/screenshots/ga-pages-report.png)
+
 ## Hotjar / Contentsquare
 
 Hotjar jest częścią Contentsquare — aplikacja ładuje tag śledzący, który nagrywa sesje użytkowników
 (Session Replay) i buduje heatmapy. Panel: [app.contentsquare.com](https://app.contentsquare.com).
+
+Dashboard "Kariera at a glance" — zagregowane metryki zachowań użytkowników (liczba sesji,
+bounce rate, średni czas sesji, Largest Contentful Paint):
+
+![Contentsquare dashboard](docs/screenshots/hotjar-dashboard.png)
 
 Lista nagranych sesji użytkowników w panelu:
 
