@@ -263,8 +263,15 @@ Lista nagranych sesji użytkowników w panelu:
 
 ![Session Replay — lista nagrań](docs/screenshots/hotjar-session-replay.png)
 
-Odtwarzacz nagrania sesji — po lewej lista odwiedzonych podstron, na dole oś czasu z zdarzeniami
-(treści na podglądzie są zamaskowane przez domyślne ustawienia prywatności Contentsquare):
+Contentsquare domyślnie anonimizuje całą treść strony w nagraniach (tekst zastępowany jest
+ciągami `aaa`, a liczby `•••`), przez co nagrania były nieczytelne. Musieliśmy więc zmienić
+ustawienie *Project and users → Data masking → Website-level masking* na **"No masking"** —
+od tego momentu nowe nagrania pokazują pełną treść aplikacji. Dane wpisywane w pola formularzy
+(e-maile, hasła) pozostają zanonimizowane niezależnie od tego ustawienia — na nagraniu widoczne
+są jako np. `CS_ANONYMIZED_EMAIL`.
+
+Odtwarzacz nagrania sesji z wersji produkcyjnej — po lewej lista odwiedzonych podstron,
+na dole oś czasu ze zdarzeniami:
 
 ![Session Replay — odtwarzacz](docs/screenshots/hotjar-replay-player.png)
 
