@@ -259,6 +259,11 @@ bounce rate, średni czas sesji, Largest Contentful Paint):
 
 ![Contentsquare dashboard](docs/screenshots/hotjar-dashboard.png)
 
+Heatmapa (Zoning Analysis) strony `/dashboard` — kolorowe strefy pokazują rozkład klików
+użytkowników na poszczególne elementy strony wraz z procentowym click rate:
+
+![Heatmapa dashboardu](docs/screenshots/hotjar-heatmap.png)
+
 Lista nagranych sesji użytkowników w panelu:
 
 ![Session Replay — lista nagrań](docs/screenshots/hotjar-session-replay.png)
