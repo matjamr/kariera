@@ -13,7 +13,14 @@ interface Kpi {
   up: boolean;
 }
 
-const KPIS: Record<Range, Kpi[]> = {
+type PresetRange = 'Last 30 Days' | 'Last 90 Days';
+interface TrendBar {
+  month: string;
+  value: number;
+  highlight?: boolean;
+}
+
+const PRESET_KPIS: Record<PresetRange, Kpi[]> = {
   'Last 30 Days': [
     { label: 'Total Applications', value: '2,482', delta: '+10.8%', up: true },
     { label: 'Interviews', value: '156', delta: '+4.2%', up: true },
@@ -26,15 +33,9 @@ const KPIS: Record<Range, Kpi[]> = {
     { label: 'Offers Extended', value: '88', delta: '+5.4%', up: true },
     { label: 'Rejections', value: '2,610', delta: '+0.8%', up: true },
   ],
-  'Custom Range': [
-    { label: 'Total Applications', value: '11,037', delta: '+24.6%', up: true },
-    { label: 'Interviews', value: '633', delta: '+12.1%', up: true },
-    { label: 'Offers Extended', value: '141', delta: '+8.9%', up: true },
-    { label: 'Rejections', value: '4,180', delta: '-2.3%', up: false },
-  ],
 };
 
-const TRENDS: Record<Range, { month: string; value: number; highlight?: boolean }[]> = {
+const PRESET_TRENDS: Record<PresetRange, TrendBar[]> = {
   'Last 30 Days': [
     { month: 'W1', value: 48 },
     { month: 'W2', value: 64 },
@@ -46,16 +47,43 @@ const TRENDS: Record<Range, { month: string; value: number; highlight?: boolean 
     { month: 'Apr', value: 74 },
     { month: 'May', value: 92, highlight: true },
   ],
-  'Custom Range': [
-    { month: 'Jan', value: 42 },
-    { month: 'Feb', value: 58 },
-    { month: 'Mar', value: 50 },
-    { month: 'Apr', value: 65 },
-    { month: 'May', value: 92, highlight: true },
-    { month: 'Jun', value: 60 },
-    { month: 'Jul', value: 48 },
-  ],
 };
+
+// Per-day baselines derived from the "Last 30 Days" figures, so a ~30-day custom
+// range reproduces the preset and any range scales believably with its length.
+const PER_DAY = { total: 82.7, interviews: 5.2, offers: 1.13, rejections: 30.5 };
+
+function dayCount(start: string, end: string): number {
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  return Math.max(1, Math.round(ms / 86_400_000) + 1);
+}
+
+function buildCustomKpis(days: number): Kpi[] {
+  const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+  return [
+    { label: 'Total Applications', value: fmt(days * PER_DAY.total), delta: '+10.8%', up: true },
+    { label: 'Interviews', value: fmt(days * PER_DAY.interviews), delta: '+4.2%', up: true },
+    { label: 'Offers Extended', value: fmt(days * PER_DAY.offers), delta: '+2.1%', up: true },
+    { label: 'Rejections', value: fmt(days * PER_DAY.rejections), delta: '-1.5%', up: false },
+  ];
+}
+
+function buildCustomTrend(start: string, end: string): TrendBar[] {
+  const days = dayCount(start, end);
+  const buckets = Math.min(7, days);
+  const startMs = new Date(start).getTime();
+  const step = (days - 1) / Math.max(1, buckets - 1);
+  const bars: TrendBar[] = Array.from({ length: buckets }, (_, i) => {
+    const d = new Date(startMs + Math.round(i * step) * 86_400_000);
+    const seed = d.getDate() + (d.getMonth() + 1) * 31; // deterministic, no flicker
+    return {
+      month: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      value: 45 + ((seed * 37) % 50),
+    };
+  });
+  const maxIdx = bars.reduce((m, b, i, arr) => (b.value > arr[m].value ? i : m), 0);
+  return bars.map((b, i) => (i === maxIdx ? { ...b, highlight: true } : b));
+}
 
 const pipeline = [
   { label: 'Submitted', value: 65, color: '#4f46e5', dot: 'bg-indigo-600' },
@@ -112,9 +140,27 @@ function PipelineDonut() {
 export default function AnalyticsPage() {
   const [range, setRange] = useState<Range>(RANGES[0]);
   const [showAllCompanies, setShowAllCompanies] = useState(false);
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
 
-  const kpis = KPIS[range];
-  const trend = TRENDS[range];
+  const isCustom = range === 'Custom Range';
+  const hasCustomDates = isCustom && customStart && customEnd && customStart <= customEnd;
+
+  const selectRange = (option: Range) => {
+    if (option === 'Custom Range' && (!customStart || !customEnd)) {
+      // Default to the last 14 days when entering custom mode.
+      const today = new Date();
+      const past = new Date(today.getTime() - 13 * 86_400_000);
+      setCustomStart(past.toISOString().slice(0, 10));
+      setCustomEnd(today.toISOString().slice(0, 10));
+    }
+    setRange(option);
+  };
+
+  const kpis = hasCustomDates
+    ? buildCustomKpis(dayCount(customStart, customEnd))
+    : PRESET_KPIS[(isCustom ? 'Last 30 Days' : range) as PresetRange];
+  const trend = hasCustomDates ? buildCustomTrend(customStart, customEnd) : PRESET_TRENDS[(isCustom ? 'Last 30 Days' : range) as PresetRange];
   const maxTrend = Math.max(...trend.map((t) => t.value));
   const companies = showAllCompanies ? topCompanies : topCompanies.slice(0, 3);
 
@@ -132,7 +178,7 @@ export default function AnalyticsPage() {
           {RANGES.map((option) => (
             <button
               key={option}
-              onClick={() => setRange(option)}
+              onClick={() => selectRange(option)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 range === option
                   ? 'bg-indigo-600 text-white'
@@ -144,6 +190,40 @@ export default function AnalyticsPage() {
           ))}
         </div>
       </div>
+
+      {/* Custom date range picker */}
+      {isCustom && (
+        <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 w-fit">
+          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            From
+            <input
+              type="date"
+              value={customStart}
+              max={customEnd || undefined}
+              onChange={(e) => setCustomStart(e.target.value)}
+              className="px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </label>
+          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            To
+            <input
+              type="date"
+              value={customEnd}
+              min={customStart || undefined}
+              onChange={(e) => setCustomEnd(e.target.value)}
+              className="px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </label>
+          {hasCustomDates && (
+            <span className="text-xs text-slate-400">
+              {dayCount(customStart, customEnd)} dni
+            </span>
+          )}
+          {isCustom && customStart && customEnd && customStart > customEnd && (
+            <span className="text-xs text-red-600 dark:text-red-400">Data „od” musi być wcześniejsza niż „do”.</span>
+          )}
+        </div>
+      )}
 
       {/* KPI tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -199,7 +279,10 @@ export default function AnalyticsPage() {
             </div>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            Monitoring volume for: <span className="font-medium text-slate-700 dark:text-slate-300">{range}</span>
+            Monitoring volume for:{' '}
+            <span className="font-medium text-slate-700 dark:text-slate-300">
+              {hasCustomDates ? `${customStart} → ${customEnd}` : range}
+            </span>
           </p>
 
           <div className="flex-1 flex items-end justify-between gap-3 min-h-[200px]">
